@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>NexusPrediction</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap');
+
+  :root {
+    --bg-deep: #0a0d14;
+    --bg-card: #0f1420;
+    --bg-card2: #131826;
+    --bg-card3: #1a1f2e;
+    --red: #e8192c;
+    --red-dim: #b01020;
+    --red-glow: rgba(232,25,44,0.25);
+    --white: #ffffff;
+    --text-muted: #7a8499;
+    --text-dim: #4a5568;
+    --border: rgba(255,255,255,0.06);
+    --border-red: rgba(232,25,44,0.3);
+    --accent-blue: #1e90ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--white);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(232,25,44,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(30,144,255,0.05) 0%, transparent 50%);
+  }
+
+  .app {
+    width: 100%;
+    max-width: 400px;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; flex-direction: column; min-height: 100vh; }
+  .screen.active { display: flex; }
+
+  /* ===== NAV ===== */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: rgba(10,13,20,0.95);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .logo-icon {
+    width: 34px;
+    height: 34px;
+    background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(232,25,44,0.3);
+    box-shadow: 0 0 12px rgba(232,25,44,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .logo-icon svg {
+    width: 20px; height: 20px;
+    position: relative; z-index: 1;
+    filter: drop-shadow(0 0 6px #2aabee);
+  }
+
+  .nav-brand {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-brand span:first-child { color: var(--white); }
+  .nav-brand span:last-child { color: var(--red); }
+
+  .nav-actions { display: flex; gap: 10px; align-items: center; }
+
+  .nav-btn {
+    width: 34px; height: 34px;
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* ===== LOGIN SCREEN ===== */
+  #login {
+    justify-content: center;
+    align-items: center;
+    padding: 40px 24px;
+    gap: 0;
+  }
+
+  .login-hero {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .login-logo {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, #0d1117 0%, #1a2035 100%);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    border: 1px solid rgba(232,25,44,0.4);
+    box-shadow: 0 0 30px rgba(232,25,44,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-logo svg {
+    width: 42px; height: 42px;
+    position: relative; z-index: 1;
+    filter: drop-shadow(0 0 12px #2aabee);
+  }
+
+  .login-logo::before {
+    content: '';
+    position: absolute;
+    width: 48px; height: 48px;
+    border: 2px solid rgba(42,171,238,0.25);
+    border-radius: 50%;
+    animation: rotateSlow 8s linear infinite;
+  }
+
+  @keyframes rotateSlow {
+    from { transform: rotate(45deg); }
+    to { transform: rotate(405deg); }
+  }
+
+  .login-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 1px;
+  }
+  .login-title span:first-child { color: var(--white); }
+  .login-title span:last-child { color: var(--red); }
+
+  .login-sub {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  .login-card {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.4);
+  }
+
+  .login-card h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 24px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .form-group { margin-bottom: 16px; }
+
+  .form-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+
+  .form-input {
+    width: 100%;
+    background: var(--bg-card3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--white);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .form-input::placeholder { color: var(--text-dim); }
+  .form-input:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px var(--red-glow);
+  }
+
+  .login-btn {
+    width: 100%;
+    background: var(--red);
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    color: var(--white);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.4s;
+  }
+  .login-btn:hover::before { left: 100%; }
+  .login-btn:hover { background: #ff1f33; box-shadow: 0 4px 20px rgba(232,25,44,0.4); }
+  .login-btn:active { transform: scale(0.98); }
+
+  .login-divider {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 12px;
+    margin: 16px 0;
+    position: relative;
+  }
+  .login-divider::before, .login-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 35%;
+    height: 1px;
+    background: var(--border);
+  }
+  .login-divider::before { left: 0; }
+  .login-divider::after { right: 0; }
+
+  .demo-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    color: var(--text-muted);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .demo-btn:hover { border-color: var(--text-muted); color: var(--white); }
+
+  .error-msg {
+    color: var(--red);
+    font-size: 12px;
+    margin-top: 12px;
+    text-align: center;
+    display: none;
+  }
+
+  /* ===== MAIN SCREEN ===== */
+  #main { flex-direction: column; }
+
+  .main-content { flex: 1; padding: 0 0 100px; }
+
+  /* Hero section */
+  .hero-section {
+    text-align: center;
+    padding: 40px 24px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-logo {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, #0d1117 0%, #1a2035 100%);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    border: 1px solid rgba(232,25,44,0.4);
+    box-shadow: 0 0 25px rgba(232,25,44,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-logo svg {
+    width: 36px; height: 36px;
+    position: relative; z-index: 1;
+    filter: drop-shadow(0 0 10px #2aabee);
+  }
+
+  .hero-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 1px;
+  }
+  .hero-title span:first-child { color: var(--white); }
+  .hero-title span:last-child { color: var(--red); }
+
+  .hero-desc {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.7;
+    margin-top: 12px;
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Live analysis bar */
+  .live-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 18px;
+    margin: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .live-icon {
+    width: 22px; height: 22px;
+    color: var(--red);
+    font-size: 16px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.9); }
+  }
+
+  .live-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.5px;
+    flex: 1;
+  }
+
+  .system-badge {
+    background: rgba(232,25,44,0.1);
+    border: 1px solid rgba(232,25,44,0.4);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--red);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* Round info card */
+  .round-card {
+    margin: 12px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .round-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .round-row:last-child { margin-bottom: 0; }
+
+  .round-icon { color: var(--red); font-size: 14px; }
+  .round-hash { color: var(--text-muted); font-size: 14px; }
+
+  .round-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .round-text strong { color: var(--white); }
+
+  .waiting-dots {
+    display: flex; gap: 6px; align-items: center;
+  }
+  .waiting-dots span {
+    width: 24px; height: 3px;
+    background: var(--bg-card3);
+    border-radius: 2px;
+    animation: blink 1.4s ease-in-out infinite;
+  }
+  .waiting-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .waiting-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink {
+    0%, 100% { background: var(--bg-card3); }
+    50% { background: var(--red-dim); }
+  }
+
+  /* ===== SEE PREDICTION BUTTON ===== */
+  .predict-btn-wrap {
+    padding: 16px 14px;
+  }
+
+  .predict-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--red) 0%, #c0101f 100%);
+    border: none;
+    border-radius: 14px;
+    padding: 18px;
+    color: var(--white);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(232,25,44,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .predict-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s;
+  }
+  .predict-btn:hover::before { left: 100%; }
+  .predict-btn:hover { box-shadow: 0 6px 30px rgba(232,25,44,0.5); transform: translateY(-1px); }
+  .predict-btn:active { transform: translateY(0) scale(0.98); }
+
+  .btn-target-icon {
+    width: 20px; height: 20px;
+    border: 2.5px solid rgba(255,255,255,0.7);
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .btn-target-icon::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px; height: 8px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 50%;
+  }
+
+  /* ===== PREDICTION RESULT ===== */
+  .prediction-result {
+    margin: 0 14px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px;
+    text-align: center;
+    display: none;
+    animation: fadeUp 0.4s ease;
+  }
+  .prediction-result.show { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .pred-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .pred-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(255,255,255,0.1);
+    letter-spacing: 2px;
+  }
+
+  .pred-conf-label {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 18px;
+    margin-bottom: 4px;
+  }
+
+  .pred-conf-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 34px;
+    font-weight: 800;
+    color: #cdd5e0;
+    letter-spacing: 1px;
+  }
+
+  .analyzing-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-card3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-top: 20px;
+    text-align: left;
+  }
+
+  .spin-icon {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(232,25,44,0.3);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .analyzing-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+  .analyzing-text strong { color: var(--white); font-weight: 600; }
+
+  /* Next prediction button */
+  .next-btn-wrap {
+    padding: 4px 14px 14px;
+    display: none;
+  }
+  .next-btn-wrap.show { display: block; }
+
+  .next-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--red) 0%, #c0101f 100%);
+    border: none;
+    border-radius: 14px;
+    padding: 18px;
+    color: var(--white);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(232,25,44,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .next-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s;
+  }
+  .next-btn:hover::before { left: 100%; }
+  .next-btn:hover { box-shadow: 0 6px 30px rgba(232,25,44,0.5); transform: translateY(-1px); }
+  .next-btn:active { transform: scale(0.98); }
+
+  /* ===== RECENT LOG ===== */
+  .log-section { padding: 4px 14px; }
+
+  .log-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .log-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+  .log-title-icon { color: var(--red); font-size: 16px; }
+
+  .log-view-all {
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+  .log-view-all:hover { color: var(--white); }
+
+  .log-items { display: flex; flex-direction: column; gap: 10px; }
+
+  .log-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .log-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .log-field-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .log-target {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .log-target-dot {
+    width: 12px; height: 12px;
+    background: var(--red);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--red);
+    flex-shrink: 0;
+  }
+
+  .conf-badge {
+    background: rgba(232,25,44,0.15);
+    border: 1px solid var(--red);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--red);
+  }
+
+  .log-actual {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+  .log-actual-icon { color: var(--red); font-size: 14px; }
+
+  .accuracy-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--red);
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .accuracy-circle {
+    width: 8px; height: 8px;
+    border: 2px solid var(--red);
+    border-radius: 50%;
+  }
+
+  .log-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .log-id {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .log-time {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .accuracy-good { color: #22c55e; }
+  .accuracy-ok { color: #f59e0b; }
+
+  .pred-range-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  .pred-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 18px 0;
+  }
+
+  .pred-stats-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .pred-stat { flex: 1; text-align: center; }
+
+  .pred-stat-sep {
+    width: 1px;
+    height: 40px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .pred-safe { color: #22c55e !important; }
+
+  .pred-signal {
+    margin-top: 14px;
+    text-align: center;
+  }
+
+  /* Smaller value for range display */
+  #predValue {
+    font-size: 32px !important;
+    letter-spacing: 1px !important;
+  }
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,13,20,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    backdrop-filter: blur(4px);
+  }
+  .loading-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .loading-box {
+    text-align: center;
+  }
+
+  .loading-spinner {
+    width: 60px; height: 60px;
+    border: 3px solid rgba(232,25,44,0.2);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  .loading-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .loading-subtext {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* Empty state */
+  .empty-log {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 400px;
+    background: rgba(10,13,20,0.95);
+    border-top: 1px solid var(--border);
+    padding: 10px 0 8px;
+    display: flex;
+    justify-content: space-around;
+    backdrop-filter: blur(12px);
+    z-index: 50;
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    color: var(--text-dim);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    padding: 4px 16px;
+  }
+  .bottom-nav-item.active { color: var(--red); }
+  .bottom-nav-item svg { width: 20px; height: 20px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-card3); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-box">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Analyzing Data</div>
+      <div class="loading-subtext" id="loadingSubtext">Running AI algorithms...</div>
+    </div>
+  </div>
+
+  <!-- ===== LOGIN SCREEN ===== -->
+  <div class="screen active" id="login">
+    <div class="login-hero">
+      <div class="login-logo">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" fill="#2aabee"/>
+          <path d="M17.707 7.293l-2.12 10.6c-.16.8-.64 1-1.3.62l-3.6-2.65-1.74 1.67c-.19.19-.35.35-.72.35l.26-3.66 6.63-5.99c.29-.26-.06-.4-.45-.14L7.11 13.01 3.57 11.9c-.78-.24-.8-.78.16-1.16l13.72-5.29c.65-.24 1.22.16 1 1.16l-.001-.001z" fill="white"/>
+        </svg>
+      </div>
+      <div class="login-title">
+        <span>Nexus</span><span>Prediction</span>
+      </div>
+      <p class="login-sub">Predict Aviator Crash Values with AI.<br>Analyze real-time data with precision.</p>
+    </div>
+
+    <div class="login-card">
+      <h3>Access System</h3>
+
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input" type="text" id="loginUser" placeholder="Enter username" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="loginPass" placeholder="Enter password">
+      </div>
+
+      <button class="login-btn" onclick="doLogin()">LOGIN &nbsp;→</button>
+      <div class="error-msg" id="loginError">Invalid credentials. Try demo / demo123</div>
+
+      <div class="login-divider">or</div>
+
+      <button class="demo-btn" onclick="demoLogin()">Continue as Demo User</button>
+    </div>
+  </div>
+
+  <!-- ===== MAIN SCREEN ===== -->
+  <div class="screen" id="main">
+    <!-- Nav -->
+    <nav class="nav">
+      <a class="nav-logo" href="#">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" fill="#2aabee"/>
+            <path d="M17.707 7.293l-2.12 10.6c-.16.8-.64 1-1.3.62l-3.6-2.65-1.74 1.67c-.19.19-.35.35-.72.35l.26-3.66 6.63-5.99c.29-.26-.06-.4-.45-.14L7.11 13.01 3.57 11.9c-.78-.24-.8-.78.16-1.16l13.72-5.29c.65-.24 1.22.16 1 1.16l-.001-.001z" fill="white"/>
+          </svg>
+        </div>
+        <div class="nav-brand"><span>Nexus</span><span>Prediction</span></div>
+      </a>
+      <div class="nav-actions">
+        <div class="nav-btn" title="Profile">👤</div>
+        <div class="nav-btn" title="Menu" onclick="doLogout()">☰</div>
+      </div>
+    </nav>
+
+    <div class="main-content">
+
+      <!-- Hero -->
+      <div class="hero-section">
+        <div class="hero-logo">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" fill="#2aabee"/>
+            <path d="M17.707 7.293l-2.12 10.6c-.16.8-.64 1-1.3.62l-3.6-2.65-1.74 1.67c-.19.19-.35.35-.72.35l.26-3.66 6.63-5.99c.29-.26-.06-.4-.45-.14L7.11 13.01 3.57 11.9c-.78-.24-.8-.78.16-1.16l13.72-5.29c.65-.24 1.22.16 1 1.16l-.001-.001z" fill="white"/>
+          </svg>
+        </div>
+        <div class="hero-title"><span>Nexus</span><span>Prediction</span></div>
+        <p class="hero-desc">Predict Aviator Crash Values with AI. Analyze real-time data, test our advanced algorithms, and dominate the leaderboard with precision.</p>
+      </div>
+
+      <!-- Live bar -->
+      <div class="live-bar">
+        <div class="live-icon">⚡</div>
+        <div class="live-label">Live Analysis</div>
+        <div class="system-badge">SYSTEM ACTIVE</div>
+      </div>
+
+
+
+      <!-- SEE PREDICTION BUTTON -->
+      <div class="predict-btn-wrap" id="predictBtnWrap">
+        <button class="predict-btn" onclick="generatePrediction()">
+          <div class="btn-target-icon"></div>
+          See Prediction
+        </button>
+      </div>
+
+      <!-- PREDICTION RESULT -->
+      <div class="prediction-result" id="predResult">
+        <div class="pred-label">Predicted Crash Range</div>
+        <div class="pred-value" id="predValue">—</div>
+        <div class="pred-range-sub" id="predRangeSub"></div>
+
+        <div class="pred-divider"></div>
+
+        <div class="pred-stats-row">
+          <div class="pred-stat">
+            <div class="pred-conf-label">Confidence</div>
+            <div class="pred-conf-value" id="predConf">—</div>
+          </div>
+          <div class="pred-stat-sep"></div>
+          <div class="pred-stat">
+            <div class="pred-conf-label">Safe Exit</div>
+            <div class="pred-conf-value pred-safe" id="predSafe">—</div>
+          </div>
+        </div>
+
+        <div class="pred-signal" id="predSignal"></div>
+
+        <div class="analyzing-box">
+          <div class="spin-icon"></div>
+          <div class="analyzing-text">
+            <strong>Analyzing live round data...</strong><br>waiting for crash
+          </div>
+        </div>
+      </div>
+
+      <!-- NEXT PREDICTION BUTTON -->
+      <div class="next-btn-wrap" id="nextBtnWrap">
+        <button class="next-btn" onclick="nextPrediction()">
+          <div class="btn-target-icon"></div>
+          Next Prediction
+        </button>
+      </div>
+
+      <!-- RECENT LOG -->
+      <div class="log-section">
+        <div class="log-header">
+          <div class="log-title">
+            <span class="log-title-icon">📈</span>
+            Recent Log
+          </div>
+          <a class="log-view-all" href="#">View full history</a>
+        </div>
+        <div class="log-items" id="logItems">
+          <div class="empty-log">No predictions yet. Click "See Prediction" to start.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="bottom-nav-item active">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        Home
+      </div>
+      <div class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        History
+      </div>
+      <div class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Live
+      </div>
+      <div class="bottom-nav-item" onclick="doLogout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Logout
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let predictionLog = [];
+  let recentCrashes = [];
+
+  // ===== AUTH =====
+  function doLogin() {
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+    const err = document.getElementById('loginError');
+    if ((u === 'demo' && p === 'demo123') || (u !== '' && p.length >= 4)) {
+      err.style.display = 'none';
+      showLoading('Authenticating...', 1200, showMain);
+    } else {
+      err.style.display = 'block';
+    }
+  }
+
+  function demoLogin() {
+    showLoading('Loading demo session...', 1000, showMain);
+  }
+
+  function doLogout() {
+    document.getElementById('main').classList.remove('active');
+    document.getElementById('login').classList.add('active');
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
+    predictionLog = [];
+    renderLog();
+    resetPredictionUI();
+  }
+
+  function showMain() {
+    document.getElementById('login').classList.remove('active');
+    document.getElementById('main').classList.add('active');
+  }
+
+  // ===== LOADING =====
+  function showLoading(text, duration, callback) {
+    const overlay = document.getElementById('loadingOverlay');
+    document.getElementById('loadingSubtext').textContent = text;
+    overlay.classList.add('show');
+    setTimeout(() => {
+      overlay.classList.remove('show');
+      if (callback) callback();
+    }, duration);
+  }
+
+  // ===== PREDICTION ENGINE =====
+  // Tracks recent rounds to inform next prediction (momentum model)
+  let recentCrashes = [];
+
+  function realisticCrash() {
+    // House edge ~3%. Uses inverse transform sampling on exponential-like dist
+    const h = 0.97;
+    const r = Math.random();
+    if (r === 0) return 1.00;
+    const raw = h / r;
+    return Math.max(1.00, parseFloat(raw.toFixed(2)));
+  }
+
+  function generatePredictionData() {
+    // --- Core crash simulation ---
+    const base = realisticCrash();
+
+    // --- Momentum bias from recent rounds ---
+    let momentumBias = 0;
+    if (recentCrashes.length >= 3) {
+      const avg = recentCrashes.slice(-5).reduce((a,b) => a+b, 0) / Math.min(recentCrashes.length, 5);
+      // If recent rounds have been low, slight chance of a higher one next
+      momentumBias = avg < 1.8 ? 0.15 : avg > 5 ? -0.05 : 0;
+    }
+
+    // --- Compute range width (narrower = higher confidence) ---
+    let low, high, conf;
+    if (base <= 1.5) {
+      // Very low: tight range around it
+      low  = Math.max(1.00, base - 0.08 + momentumBias);
+      high = base + 0.22 + momentumBias;
+      conf = Math.floor(88 + Math.random() * 9);   // 88-96%
+    } else if (base <= 2.5) {
+      low  = Math.max(1.00, base - 0.15 + momentumBias);
+      high = base + 0.45 + momentumBias;
+      conf = Math.floor(82 + Math.random() * 10);  // 82-91%
+    } else if (base <= 5) {
+      low  = Math.max(1.00, base - 0.3 + momentumBias);
+      high = base + 0.9 + momentumBias;
+      conf = Math.floor(75 + Math.random() * 10);  // 75-84%
+    } else if (base <= 15) {
+      low  = Math.max(1.00, base - 0.8 + momentumBias);
+      high = base + 2.5 + momentumBias;
+      conf = Math.floor(65 + Math.random() * 12);  // 65-76%
+    } else {
+      low  = Math.max(1.00, base - 2 + momentumBias);
+      high = base + 8 + momentumBias;
+      conf = Math.floor(52 + Math.random() * 16);  // 52-67%
+    }
+
+    low  = parseFloat(Math.max(1.00, low).toFixed(2));
+    high = parseFloat(Math.max(low + 0.1, high).toFixed(2));
+
+    // --- Safe exit: conservative point inside range ---
+    const safeExit = parseFloat((low + (high - low) * 0.38).toFixed(2));
+
+    // --- Signal ---
+    let signal;
+    if (conf >= 88 && base <= 2.5) signal = 'STRONG BUY';
+    else if (conf >= 78)            signal = 'BUY';
+    else if (conf >= 68)            signal = 'CAUTION';
+    else                            signal = 'HIGH RISK';
+
+    // Remember this crash for momentum
+    recentCrashes.push(base);
+    if (recentCrashes.length > 10) recentCrashes.shift();
+
+    return { low, high, conf, safeExit, signal };
+  }
+
+  function applyPrediction(data, animate) {
+    const { low, high, conf, safeExit, signal } = data;
+    const valEl   = document.getElementById('predValue');
+    const subEl   = document.getElementById('predRangeSub');
+    const confEl  = document.getElementById('predConf');
+    const safeEl  = document.getElementById('predSafe');
+    const sigEl   = document.getElementById('predSignal');
+
+    const sigColor = signalColor(signal);
+
+    function set() {
+      valEl.textContent  = `${low.toFixed(2)}x – ${high.toFixed(2)}x`;
+      subEl.textContent  = `Crash expected within this range`;
+      confEl.textContent = `${conf}%`;
+      safeEl.textContent = `${safeExit.toFixed(2)}x`;
+      sigEl.innerHTML    = `<span style="color:${sigColor}; border:1px solid ${sigColor}; background:${sigColor}22; border-radius:6px; padding:4px 12px; font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:1.5px;">● ${signal}</span>`;
+    }
+
+    if (animate) {
+      valEl.style.opacity = '0'; confEl.style.opacity = '0';
+      setTimeout(() => {
+        set();
+        valEl.style.transition = 'opacity 0.4s';
+        confEl.style.transition = 'opacity 0.4s';
+        valEl.style.opacity = '1'; confEl.style.opacity = '1';
+      }, 100);
+    } else {
+      set();
+    }
+
+    return { low, high, conf, safeExit, signal };
+  }
+
+  function generatePrediction() {
+    showLoading('Running AI prediction model...', 1600, () => {
+      const data = generatePredictionData();
+      applyPrediction(data, false);
+
+      document.getElementById('predictBtnWrap').style.display = 'none';
+      document.getElementById('predResult').classList.add('show');
+      document.getElementById('nextBtnWrap').classList.add('show');
+
+      setTimeout(() => {
+        addLogEntry(data.low, data.high, data.conf, data.safeExit, data.signal);
+      }, 1800);
+    });
+  }
+
+  function nextPrediction() {
+    showLoading('Analyzing next round...', 1400, () => {
+      const data = generatePredictionData();
+      applyPrediction(data, true);
+
+      setTimeout(() => {
+        addLogEntry(data.low, data.high, data.conf, data.safeExit, data.signal);
+      }, 1800);
+    });
+  }
+
+  function addLogEntry(low, high, confidence, safeExit, signal) {
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const id = randomId();
+    predictionLog.unshift({ low, high, confidence, safeExit, signal, time, id });
+    if (predictionLog.length > 10) predictionLog.pop();
+    renderLog();
+  }
+
+  function randomId() {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    return Array.from({ length: 15 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  }
+
+  function signalColor(signal) {
+    if (signal === 'STRONG BUY') return '#22c55e';
+    if (signal === 'BUY') return '#86efac';
+    if (signal === 'CAUTION') return '#f59e0b';
+    return '#e8192c';
+  }
+
+  function renderLog() {
+    const el = document.getElementById('logItems');
+    if (predictionLog.length === 0) {
+      el.innerHTML = '<div class="empty-log">No predictions yet. Click "See Prediction" to start.</div>';
+      return;
+    }
+    el.innerHTML = predictionLog.map(entry => {
+      const sc = signalColor(entry.signal);
+      return `
+        <div class="log-item">
+          <div class="log-item-row">
+            <div>
+              <div class="log-field-label">Predicted Range</div>
+              <div class="log-target">
+                <div class="log-target-dot"></div>
+                ${entry.low.toFixed(2)}x – ${entry.high.toFixed(2)}x
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="log-field-label">Confidence</div>
+              <div class="conf-badge">${entry.confidence}%</div>
+            </div>
+          </div>
+          <div class="log-item-row" style="margin-bottom:0">
+            <div>
+              <div class="log-field-label">Safe Exit At</div>
+              <div class="log-target" style="font-size:16px;">
+                <div class="log-target-dot" style="background:#22c55e; box-shadow:0 0 8px #22c55e"></div>
+                ${entry.safeExit.toFixed(2)}x
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="log-field-label">Signal</div>
+              <div class="accuracy-badge" style="color:${sc};">
+                <div class="accuracy-circle" style="border-color:${sc}"></div>
+                ${entry.signal}
+              </div>
+            </div>
+          </div>
+          <div class="log-meta">
+            <span class="log-id">ID: ${entry.id}</span>
+            <span class="log-time">${entry.time}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function resetPredictionUI() {
+    document.getElementById('predResult').classList.remove('show');
+    document.getElementById('nextBtnWrap').classList.remove('show');
+    document.getElementById('predictBtnWrap').style.display = 'block';
+    currentPrediction = null;
+  }
+
+  // Enter key on login
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const loginScreen = document.getElementById('login');
+      if (loginScreen.classList.contains('active')) doLogin();
+    }
+  });
+</script>
+</body>
+</html>
